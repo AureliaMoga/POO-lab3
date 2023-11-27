@@ -1,0 +1,126 @@
+
+#include <iostream>
+
+class Date {
+private:
+    int ziua;
+    int luna;
+    int anul;
+
+public:
+    Date(int zi, int lun, int an)
+        : ziua(zi), luna(lun), anul(an) {}
+
+    // Operatorul + pentru adăugarea unui număr întreg de zile
+    Date operator+(int days) {
+        Date result(ziua + days, luna, anul);
+        while (result.ziua > getDaysInCurrentMonth()) {
+            result.ziua -= getDaysInCurrentMonth();
+            if (++result.luna > 12) {
+                result.luna = 1;
+                ++result.anul;
+            }
+        }
+        return result;
+    }
+
+    // Operatorul - pentru scăderea unui număr întreg de zile
+    Date operator-(int days) {
+        Date result(ziua - days, luna, anul);
+        while (result.ziua < 1) {
+            if (--result.luna < 1) {
+                result.luna = 12;
+                --result.anul;
+            }
+            result.ziua += getDaysInCurrentMonth();
+        }
+        return result;
+    }
+
+    // Operatorul ++ prefixat
+    Date& operator++() {
+        *this = *this + 1;
+        return *this;
+    }
+
+    // Operatorul ++ postfixat
+    Date operator++(int) {
+        Date temp = *this;
+        *this = *this + 1;
+        return temp;
+    }
+
+    // Operatorul -- prefixat
+    Date& operator--() {
+        *this = *this - 1;
+        return *this;
+    }
+
+    // Operatorul -- postfixat
+    Date operator--(int) {
+        Date temp = *this;
+        *this = *this - 1;
+        return temp;
+    }
+
+    // Funcție pentru a determina numărul de zile în luna curentă
+    int getDaysInCurrentMonth() {
+        if (luna == 2 && ((anul % 4 == 0 && anul % 100 != 0) || anul % 400 == 0)) {
+            return 29;  // Februarie într-un an bisect
+        } else {
+            int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            return daysInMonth[luna];
+        }
+    }
+
+    // Funcție pentru afișarea datei
+    void display() {
+        std::cout << ziua << '/' << luna << '/' << anul << std::endl;
+    }
+
+    // Funcție pentru verificarea dacă anul este bisect
+    bool isLeapYear() {
+        return (anul % 4 == 0 && anul % 100 != 0) || anul % 400 == 0;
+    }
+};
+
+int main() {
+    int zi, luna, an;
+    
+    // Introducerea datei de la utilizator
+    std::cout << "Introduceti ziua: ";
+    std::cin >> zi;
+    
+    std::cout << "Introduceti luna: ";
+    std::cin >> luna;
+
+    std::cout << "Introduceti anul: ";
+    std::cin >> an;
+
+    Date d(zi, luna, an);
+    d.display();
+
+    int daysInCurrentMonth = d.getDaysInCurrentMonth();
+    std::cout << "Numărul de zile în luna curentă: " << daysInCurrentMonth << std::endl;
+
+    // Afișarea dacă anul introdus de utilizator este bisect sau nu
+    if (d.isLeapYear()) {
+        std::cout << "Anul introdus este bisect." << std::endl;
+    } else {
+        std::cout << "Anul introdus nu este bisect." << std::endl;
+    }
+
+    Date d2 = d + 5;
+    d2.display();
+
+    Date d3 = d2 - 3;
+    d3.display();
+
+    ++d3;
+    d3.display();
+
+    d3--;
+    d3.display();
+
+    return 0;
+}
